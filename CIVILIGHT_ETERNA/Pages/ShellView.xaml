@@ -1,0 +1,418 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CIVILIGHT_ETERNA.Pages"
+        xmlns:al="clr-namespace:EquipmentLogExport.BabelSystem.Alarm"
+        xmlns:ce="clr-namespace:CIVILIGHT_ETERNA"
+        xmlns:s="https://github.com/canton7/Stylet" Loaded="{s:Action Init}"
+        xmlns:hc="https://handyorg.github.io/handycontrol" d:DataContext="{d:DesignInstance Type=local:ShellViewModel}" x:Class="CIVILIGHT_ETERNA.Pages.ShellView"
+        mc:Ignorable="d" FontFamily="{StaticResource HMSansSC}"
+        Title="Shell" Height="345" Width="335" Closing="{s:Action Closing}"
+        MinHeight="390" MinWidth="700" MaxWidth="1280">
+    <Grid>
+        <Border Grid.Column="2" BorderBrush="#12000000" BorderThickness="30" HorizontalAlignment="Right" Margin="0,0,18,18" Width="180" Height="180" VerticalAlignment="Bottom" RenderTransformOrigin="0.5,0.5" >
+            <Border.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="45"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Border.RenderTransform>
+        </Border>
+        <Border Grid.Column="2" IsHitTestVisible="False" BorderBrush="#06000000" BorderThickness="30" Panel.ZIndex="9" HorizontalAlignment="Right" Margin="0,0,18,18" Width="180" Height="180" VerticalAlignment="Bottom" RenderTransformOrigin="0.5,0.5" >
+            <Border.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="45"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Border.RenderTransform>
+        </Border>
+        <DockPanel>
+            <hc:SimplePanel DockPanel.Dock="Top" VerticalAlignment="Top" Background="{StaticResource MAINDARKBRUSH}">
+                <hc:SimplePanel>
+                    <Border>
+                        <Border.Background>
+                            <LinearGradientBrush EndPoint="0.5,0.9" StartPoint="0,0" SpreadMethod="Pad">
+                                <GradientStop Color="#33FFC107"/>
+                                <GradientStop Color="#00FFC107" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                    </Border>
+                    <hc:SimpleStackPanel Grid.Row="0" Height="60" Orientation="Horizontal">
+
+                        <Border Background="#FFEAC452" Width="15" BorderThickness="0">
+                        </Border>
+                        <hc:SimpleStackPanel Orientation="Horizontal">
+                            <hc:ContextMenuButton Margin="10,0,0,0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" Style="{StaticResource ButtonCustom}" >
+                                <hc:ContextMenuButton.Menu>
+                                    <ContextMenu >
+                                        <MenuItem Header="切换账号" Command="{s:Action UBoxOpen}"></MenuItem>
+                                        <Separator Visibility="{Binding CurrentUser.AccessLevel, Converter={StaticResource UserLevelToVisiConverter}, ConverterParameter=2}"/>
+                                        <MenuItem Header="退出登录" Command="{s:Action ULogout}" Visibility="{Binding CurrentUser.AccessLevel, Converter={StaticResource UserLevelToVisiConverter}, ConverterParameter=2}"></MenuItem>
+                                    </ContextMenu>
+                                </hc:ContextMenuButton.Menu>
+                                <hc:Gravatar HorizontalAlignment="Left" VerticalAlignment="Center" Style="{StaticResource GravatarCircle}" BorderBrush="White" BorderThickness="3" Width="50" Height="50" >
+                                    <hc:Gravatar.Background>
+                                        <ImageBrush d:ImageSource="{StaticResource Focalors01}" TileMode="None" RenderOptions.BitmapScalingMode="HighQuality" ImageSource="{Binding CurrentUser.Avatar, Converter={StaticResource StringToImageConverter}}" >
+                                            <ImageBrush.RelativeTransform>
+                                                <TransformGroup>
+                                                    <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                                                    <TranslateTransform/>
+                                                </TransformGroup>
+                                            </ImageBrush.RelativeTransform>
+                                        </ImageBrush>
+                                    </hc:Gravatar.Background>
+                                    <hc:Gravatar.Effect>
+                                        <DropShadowEffect ShadowDepth="1" BlurRadius="10" Opacity="0.1"/>
+                                    </hc:Gravatar.Effect>
+                                </hc:Gravatar>
+                            </hc:ContextMenuButton>
+                            <hc:SimpleStackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                                <TextBlock FontSize="18" Foreground="White">
+                                    <Run d:Text="Administrator" Text="{Binding CurrentUser.UserName}" FontWeight="Bold"/>
+                                    <Run FontSize="12" d:Text="Administrator" Foreground="#66FFFFFF" Text="{Binding CurrentUser.AccessLevel}" FontWeight="Regular"/>
+                                </TextBlock>
+                                <TextBlock d:Text="An Administrator" FontSize="12" Margin="0,4,0,0" Foreground="#FFFFFFFF" Text="{Binding CurrentUser.UserDesc}"/>
+                            </hc:SimpleStackPanel>
+                        </hc:SimpleStackPanel>
+                    </hc:SimpleStackPanel>
+                </hc:SimplePanel>
+
+                <hc:SimplePanel Margin="10" VerticalAlignment="Center" HorizontalAlignment="Right">
+                    <hc:SimpleStackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                        <hc:SimpleStackPanel VerticalAlignment="Center" Margin="0,0,8,0">
+                            <TextBlock Text="A.F.C" Foreground="{StaticResource InfoBrush}" FontWeight="Bold" FontSize="16" HorizontalAlignment="Right"/>
+                            <TextBlock d:Text="1.0" Text="{Binding Ver.MajVer}" Foreground="#88FFFFFF" FontWeight="Medium" FontSize="10" HorizontalAlignment="Right"/>
+                        </hc:SimpleStackPanel>
+                        <TextBlock VerticalAlignment="Center" Foreground="White" Text="CIVILIGHT_ETERNA " FontSize="24" FontWeight="Black"/>
+                    </hc:SimpleStackPanel>
+                </hc:SimplePanel>
+            </hc:SimplePanel>
+            <Grid DockPanel.Dock="Bottom">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*" MinWidth="350" MaxWidth="500"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <hc:ScrollViewer IsInertiaEnabled="True" VirtualizingPanel.IsVirtualizing="True" IsDeferredScrollingEnabled="True">
+                    <ItemsControl Background="{x:Null}" ItemsSource="{Binding AlarmList}" Margin="7,7,1,7" Padding="5">
+                        <d:ItemsControl.Items>
+                            <al:Alarm Text="Alarm Sample Alarm Sample" Description="Discription Sample" Level="Alarm"/>
+                            <al:Alarm Text="Warning Sample" Description="Discription Sample" Level="Warning"/>
+                            <al:Alarm Text="Info Sample" Description="Discription Sample" Level="Info"/>
+                        </d:ItemsControl.Items>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <hc:UniformSpacingPanel VirtualizingPanel.IsVirtualizing="True" hc:PanelElement.FluidMoveBehavior="{StaticResource BehaviorXY200}" Orientation="Vertical" Spacing="12">
+
+                                </hc:UniformSpacingPanel>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <hc:TransitioningContentControl TransitionMode="Fade">
+                                    <Button Height="Auto" Style="{StaticResource ButtonCustom}" Width="Auto" Command="{s:Action AlarmClick}" 
+                        CommandParameter="{Binding}" hc:BorderElement.CornerRadius="12" Padding="12" 
+                        Background="{Binding Level, Converter={StaticResource AlarmBrushesConverter}}" 
+                        BorderBrush="{x:Null}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                        hc:BackgroundSwitchElement.MouseHoverBackground="{Binding Level, Converter={StaticResource AlarmBrushesConverter}}"
+                        hc:BackgroundSwitchElement.MouseDownBackground="{Binding Level, Converter={StaticResource AlarmBrushesConverter}}">
+                                        <Button.Effect>
+                                            <DropShadowEffect ShadowDepth="0" Opacity="0.2" BlurRadius="9"/>
+                                        </Button.Effect>
+                                        <Grid Margin="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="54"/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Margin="4,2,0,2" Grid.Column="0" Text="{Binding Logo}" VerticalAlignment="Top" FontFamily="{StaticResource FA6S}" FontSize="42" Foreground="{Binding Level, Converter={StaticResource AlarmBrushesConverter}, ConverterParameter=1}"/>
+                                            <StackPanel Margin="6,0,0,0" Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center">
+                                                <hc:SimplePanel>
+                                                    <TextBlock Text="{Binding Text}" TextWrapping="Wrap" hc:TextBlockAttach.AutoTooltip="True" FontSize="16" Foreground="{Binding Level, Converter={StaticResource AlarmBrushesConverter}, ConverterParameter=1}" FontWeight="Bold" Margin="0,0,45,0"></TextBlock>
+                                                    <TextBlock Text="{Binding AddTime, StringFormat=HH:mm}" FontWeight="Regular" FontSize="14" Foreground="{Binding Level, Converter={StaticResource AlarmBrushesConverter}, ConverterParameter=1}" Opacity="0.75" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,0,0">
+                                                        <TextBlock.ToolTip>
+                                                            <ToolTip>
+                                                                <TextBlock Text="{Binding AddTime, StringFormat=yyyy/MM/dd HH:mm:ss}">
+                                                                </TextBlock>
+                                                            </ToolTip>
+                                                        </TextBlock.ToolTip>
+                                    </TextBlock>
+                                                </hc:SimplePanel>
+                                                <TextBlock Text="{Binding Description}" FontWeight="Regular" FontSize="14" TextWrapping="WrapWithOverflow" hc:TextBlockAttach.AutoTooltip="True" Margin="0,5,0,0" Opacity="0.75" Foreground="{Binding Level, Converter={StaticResource AlarmBrushesConverter}, ConverterParameter=1}"></TextBlock>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Button>
+                                </hc:TransitioningContentControl>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </hc:ScrollViewer>
+                <hc:ScrollViewer Grid.Column="1" VirtualizingPanel.IsVirtualizing="True" IsDeferredScrollingEnabled="True">
+                    <hc:SimpleStackPanel VirtualizingPanel.IsVirtualizing="True" Orientation="Vertical" >
+                        <Border Background="{StaticResource LNKSTATOFL}" CornerRadius="12" Visibility="{Binding ProgressShow, Converter={StaticResource BoolToVisiCollaConverter}}" Margin="7,12,12,0">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="9" ShadowDepth="0" Opacity="0.2"/>
+                            </Border.Effect>
+                            <hc:ContextMenuButton Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" Style="{StaticResource ButtonCustom}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+                                <hc:ContextMenuButton.Menu>
+                                    <ContextMenu >
+                                        <MenuItem Header="停止任务" Command="{s:Action AFCStop}"></MenuItem>
+                                    </ContextMenu>
+                                </hc:ContextMenuButton.Menu>
+                                <hc:SimplePanel ClipToBounds="True" Margin="0" VerticalAlignment="Top">
+                                    <Border ClipToBounds="True" CornerRadius="12">
+                                        <Border.Background>
+                                            <LinearGradientBrush EndPoint="0.3,0.5" StartPoint="0,0" SpreadMethod="Pad">
+                                                <GradientStop Color="#33FFC107"/>
+                                                <GradientStop Color="#00FFC107" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                    </Border>
+                                    <hc:SimplePanel Margin="20,0,0,0" >
+                                        <TextBlock Text="&#xf0ae;" FontFamily="{StaticResource FA6S}" FontSize="32" Foreground="white" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                    </hc:SimplePanel>
+                                    <hc:SimpleStackPanel Margin="70,12,12,12" >
+                                        <TextBlock Text="{Binding ProgressTitle}" d:Text="ProgessTitle" FontSize="16" FontWeight="Bold" Foreground="White" ></TextBlock>
+                                        <TextBlock Text="{Binding ProgressDesc}" d:Text="ProgessDesc" Margin="0,4,0,0" FontWeight="Medium" Foreground="#CCFFFFFF" FontSize="12"></TextBlock>
+                                        <ProgressBar Margin="0,6,0,0" Style="{StaticResource ProgressBarFlat}" Value="{Binding ProgressValue}"  Visibility="{Binding ProgressRun, Converter={StaticResource BoolToVisiCollaConverter}}" Foreground="White" Background="{StaticResource MAINBLACKBRUSH}"/>
+
+                                    </hc:SimpleStackPanel>
+                                </hc:SimplePanel>
+                            </hc:ContextMenuButton>
+                        </Border>
+                        <Border CornerRadius="12" Background="White" Margin="7,12,12,0">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="9" ShadowDepth="0" Opacity="0.2"/>
+                            </Border.Effect>
+                            <StackPanel Margin="18" Orientation="Vertical">
+                                <hc:SimpleStackPanel VerticalAlignment="Bottom" Orientation="Horizontal" Margin="0,0,0,10">
+                                    <TextBlock Text="&#xf1c6;" FontSize="18" FontFamily="{StaticResource FA6S}" VerticalAlignment="Center" Foreground="{StaticResource MAINDARKBRUSH}" />
+                                    <TextBlock Text="自动目录压缩" FontSize="18" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="A.F.C." FontSize="12" FontWeight="Regular" Foreground="{StaticResource TextForeLabelGray}" VerticalAlignment="Bottom" Margin="4,0,0,1"/>
+                                </hc:SimpleStackPanel>
+                                <hc:SimpleStackPanel Margin="0,0,0,10" Orientation="Horizontal">
+                                    <Button Content="&#xf56f;" FontFamily="{StaticResource FA6S}" Command="{s:Action AFCSourceChange}" Padding="0" Height="28" Width="28" BorderBrush="{StaticResource MAINDARKBRUSH}" Foreground="{StaticResource MAINDARKBRUSH}"/>
+                                    <Button Margin="8,0,0,0" Command="{s:Action OpenFolder}" CommandParameter="{Binding Config.SourcePath, Mode=OneWay}"  Padding="8,0,8,0" Height="28" BorderBrush="{StaticResource MAINDARKBRUSH}" Foreground="{StaticResource MAINDARKBRUSH}">
+                                        <hc:SimpleStackPanel Orientation="Horizontal">
+                                            <TextBlock Text="folder" FontFamily="{StaticResource FA6S}" Margin="0,0,5,0" VerticalAlignment="Center" />
+                                            <TextBlock Text="打开" VerticalAlignment="Center"/>
+                                        </hc:SimpleStackPanel>
+                                    </Button>
+                                    <TextBlock VerticalAlignment="Center"  Margin="8,0,0,0" hc:TextBlockAttach.AutoTooltip="True">
+                <Run>源目录：</Run>
+                <Run Text="{Binding Config.SourcePath, Mode=OneWay}" d:Text="D:\LogArchive"/>
+                                    </TextBlock>
+                                </hc:SimpleStackPanel>
+                                <hc:SimpleStackPanel Margin="0,0,0,10" Orientation="Horizontal">
+                                    <Button Content="download" FontFamily="{StaticResource FA6S}" Command="{s:Action AFCTargetChange}" Padding="0" Height="28" Width="28" BorderBrush="{StaticResource MAINDARKBRUSH}" Foreground="{StaticResource MAINDARKBRUSH}"/>
+                                    <Button Margin="8,0,0,0" Command="{s:Action OpenFolder}" CommandParameter="{Binding Config.TargetPath, Mode=OneWay}"  Padding="8,0,8,0" Height="28" BorderBrush="{StaticResource MAINDARKBRUSH}" Foreground="{StaticResource MAINDARKBRUSH}">
+                                        <hc:SimpleStackPanel Orientation="Horizontal">
+                                            <TextBlock Text="folder" FontFamily="{StaticResource FA6S}" Margin="0,0,5,0" VerticalAlignment="Center" />
+                                            <TextBlock Text="打开" VerticalAlignment="Center"/>
+                                        </hc:SimpleStackPanel>
+                                    </Button>
+                                    <TextBlock VerticalAlignment="Center" Margin="8,0,0,0" hc:TextBlockAttach.AutoTooltip="True">
+                <Run>输出目录：</Run>
+                <Run Text="{Binding Config.TargetPath, Mode=OneWay}" d:Text="D:\LogArchive"/>
+                                    </TextBlock>
+                                </hc:SimpleStackPanel>
+                                <hc:SimpleStackPanel Margin="0,0,0,10" Orientation="Horizontal" >
+                                    <Button Content="clock" FontFamily="{StaticResource FA6S}" Padding="0" Height="28" Width="28" Foreground="{StaticResource MAINDARKBRUSH}" BorderBrush="{StaticResource MAINDARKBRUSH}"/>
+                                    <TextBlock VerticalAlignment="Center" Margin="8,0,8,0" hc:TextBlockAttach.AutoTooltip="True">
+                                        <Run>在</Run>
+                                        <Run Text="{Binding Config.Delay, Mode=OneWay}" d:Text="0"/>
+                                        <Run>天之前</Run>
+                                    </TextBlock>
+                                    <hc:NumericUpDown Minimum="1" Maximum="999" Value="{Binding AFCDelay, Mode=OneWay}" ValueChanged="{s:Action AFCDelayChanged}" Width="80"  Visibility="{Binding CurrentUser.AccessLevel, Converter={StaticResource UserLevelToVisiConverter}, ConverterParameter=2}" InputScope="Number"/>
+                                </hc:SimpleStackPanel>
+                                <hc:SimpleStackPanel Margin="0,0,0,10" Orientation="Horizontal">
+                                    <Button Content="trash" FontFamily="{StaticResource FA6S}" Command="{s:Action AFCDeleteSwitch}" Padding="0" Height="28" Width="28" Background="{Binding Config.Delete, Mode=OneWay, Converter={StaticResource AbleStatusBrushConverter}}" BorderBrush="{StaticResource MAINDARKBRUSH}" Foreground="{Binding Config.Delete, Mode=OneWay, Converter={StaticResource AbleStatusBrushConverter}, ConverterParameter=1}"/>
+                                    <TextBlock Text="{Binding Config.Delete, Mode=OneWay, Converter={StaticResource Boolean2StringConverter}, ConverterParameter=压缩后保留原文件;压缩后删除原文件}" d:Text="压缩后删除原文件" VerticalAlignment="Center" Margin="8,0,0,0" />
+                                </hc:SimpleStackPanel>
+                                <hc:SimpleStackPanel Margin="0,0,0,10" Orientation="Horizontal"  Visibility="{Binding CurrentUser.AccessLevel, Converter={StaticResource UserLevelToVisiConverter}, ConverterParameter=2}">
+                                    <Button Content="play" FontFamily="{StaticResource FA6S}" Command="{s:Action AFCRun}" Padding="0" Height="28" Width="28" BorderBrush="{StaticResource MAINDARKBRUSH}" Foreground="{StaticResource MAINDARKBRUSH}"/>
+                                    <TextBlock VerticalAlignment="Center" Margin="8,0,16,0" Text="立即运行"/>
+
+                                </hc:SimpleStackPanel>
+                                <hc:SimplePanel>
+                                    <hc:SimpleStackPanel Orientation="Horizontal">
+                                        <Button Content="&#xf011;" FontFamily="{StaticResource FA6S}" Command="{s:Action AFCSwitch}" Padding="0" Height="28" Width="28" Background="{Binding Config.Enable, Mode=OneWay, Converter={StaticResource AbleStatusBrushConverter}}" BorderBrush="{StaticResource MAINDARKBRUSH}" Foreground="{Binding Config.Enable, Mode=OneWay, Converter={StaticResource AbleStatusBrushConverter}, ConverterParameter=1}"/>
+                                        <TextBlock Text="{Binding Config.Enable, Mode=OneWay, Converter={StaticResource Boolean2StringConverter}, ConverterParameter=未启用;已启用}" d:Text="未启用" VerticalAlignment="Center" Margin="8,0,0,0" />
+                                    </hc:SimpleStackPanel>
+                                    <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Margin="8,0,0,0">
+                <Run>下次执行时间：</Run>
+                <Run Text="{Binding Config.NextAct, Mode=OneWay, StringFormat=yyyy/MM/dd HH:mm}"/>
+                                    </TextBlock>
+                                </hc:SimplePanel>
+                            </StackPanel>
+                        </Border>
+                        <Border Margin="7,12,12,12" CornerRadius="12" Background="White">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="9" ShadowDepth="0" Opacity="0.2"/>
+                            </Border.Effect>
+                            <Grid>
+                                <hc:SimpleStackPanel Margin="18">
+                                    <TextBlock Text="{Binding Ver.Title}" d:Text="ProgramTitle" FontSize="24" FontWeight="Black" Foreground="{StaticResource TextForeContentGray}"></TextBlock>
+                                    <hc:UniformSpacingPanel Orientation="Vertical" Spacing="8" Margin="0,14,0,0">
+                                        <hc:SimpleStackPanel Orientation="Horizontal">
+                                            <TextBlock Text="版本" Foreground="{StaticResource TextForeLabelGray}" Margin="0,0,15,0" Width="68"></TextBlock>
+                                            <TextBlock Text="{Binding Ver.Ver}" d:Text="1.0.0" hc:Poptip.Content="{Binding RelativeSource={RelativeSource self}, Path=Text}" hc:Poptip.Placement="Bottom" Foreground="{StaticResource TextForeContentGray}">
+                                            </TextBlock>
+                                        </hc:SimpleStackPanel>
+                                        <hc:SimpleStackPanel Orientation="Horizontal">
+                                            <TextBlock Text="系统版本" Foreground="{StaticResource TextForeLabelGray}" Margin="0,0,15,0" Width="68"></TextBlock>
+                                            <TextBlock Text="{Binding Ver.OSVer}" d:Text="1.0.0" hc:Poptip.Content="{Binding RelativeSource={RelativeSource self}, Path=Text}" hc:Poptip.Placement="Bottom" Foreground="{StaticResource TextForeContentGray}"></TextBlock>
+                                        </hc:SimpleStackPanel>
+                                        <hc:SimpleStackPanel Orientation="Horizontal">
+                                            <TextBlock Text=".Net运行时" Foreground="{StaticResource TextForeLabelGray}" Margin="0,0,15,0" Width="68"></TextBlock>
+                                            <TextBlock Text="{Binding Ver.DotNetRuntime}" d:Text="1.0.0" hc:Poptip.Content="{Binding RelativeSource={RelativeSource self}, Path=Text}" hc:Poptip.Placement="Bottom" Foreground="{StaticResource TextForeContentGray}"></TextBlock>
+                                        </hc:SimpleStackPanel>
+                                        <hc:SimpleStackPanel Orientation="Horizontal">
+                                            <TextBlock Text="处理器数量" Foreground="{StaticResource TextForeLabelGray}" Margin="0,0,15,0" Width="68"></TextBlock>
+                                            <TextBlock Text="{Binding Ver.CPUCount}" d:Text="1.0.0" hc:Poptip.Content="{Binding RelativeSource={RelativeSource self}, Path=Text}" hc:Poptip.Placement="Bottom" Foreground="{StaticResource TextForeContentGray}"></TextBlock>
+                                        </hc:SimpleStackPanel>
+                                        <hc:SimpleStackPanel Orientation="Horizontal">
+                                            <TextBlock Text="当前目录" Foreground="{StaticResource TextForeLabelGray}" Margin="0,0,15,0" Width="68"></TextBlock>
+                                            <TextBlock Text="{Binding Ver.RunDirectory}" d:Text="1.0.0" hc:Poptip.Content="{Binding RelativeSource={RelativeSource self}, Path=Text}" hc:Poptip.Placement="Bottom" Foreground="{StaticResource TextForeContentGray}"></TextBlock>
+                                        </hc:SimpleStackPanel>
+                                    </hc:UniformSpacingPanel>
+                                </hc:SimpleStackPanel>
+                            </Grid>
+                        </Border>
+                    </hc:SimpleStackPanel>
+
+                </hc:ScrollViewer>
+            </Grid>
+        </DockPanel>
+
+        <hc:TransitioningContentControl d:Visibility="Collapsed" Panel.ZIndex="99" ClipToBounds="True" TransitionMode="Fade" Visibility="{Binding UBoxShow, Converter={StaticResource BoolToVisiCollaConverter}}">
+            <Grid Background="#CCffffff">
+                <hc:TransitioningContentControl TransitionStoryboard="{StaticResource GenshinTransform}">
+                    <Border Background="White" Height="260" BorderBrush="#FF1F2233" BorderThickness="0,2,0,8" RenderTransformOrigin="0.5,0.5">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="30" Direction="270" ShadowDepth="6" Opacity="0.3"/>
+                        </Border.Effect>
+                        <Border.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="1"/>
+                            </TransformGroup>
+                        </Border.RenderTransform>
+                        <Grid ClipToBounds="True">
+                            <hc:TransitioningContentControl TransitionMode="Right2Left">
+                                <Border BorderBrush="#66EAC452" BorderThickness="24" HorizontalAlignment="Right" Margin="0,0,18,8" Width="150" Height="150" VerticalAlignment="Bottom" RenderTransformOrigin="0.5,0.5" >
+                                    <Border.RenderTransform>
+                                        <TransformGroup>
+                                            <ScaleTransform/>
+                                            <SkewTransform/>
+                                            <RotateTransform Angle="45"/>
+                                            <TranslateTransform/>
+                                        </TransformGroup>
+                                    </Border.RenderTransform>
+                                </Border>
+                            </hc:TransitioningContentControl>
+                            <hc:TransitioningContentControl TransitionMode="Bottom2TopWithFade">
+                                <hc:SimpleStackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Border BorderBrush="#FF1F2233" BorderThickness="18" Width="110" Height="110" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Center" HorizontalAlignment="Center" >
+                                        <Border.RenderTransform>
+                                            <TransformGroup>
+                                                <ScaleTransform/>
+                                                <SkewTransform/>
+                                                <RotateTransform Angle="45"/>
+                                                <TranslateTransform/>
+                                            </TransformGroup>
+                                        </Border.RenderTransform>
+                                    </Border>
+                                    <hc:UniformSpacingPanel Spacing="20" VerticalAlignment="Center" Orientation="Vertical" Margin="50,0,0,0">
+                                        <hc:SimpleStackPanel Orientation="Horizontal">
+                                            <TextBlock FontSize="16" Width="80" VerticalAlignment="Bottom" FontWeight="Bold" TextAlignment="Right">Account</TextBlock>
+                                            <hc:TextBox Width="250" d:Text="Celestia" FontSize="16" hc:BorderElement.CornerRadius="0" BorderBrush="#FF1F2233" BorderThickness="0,0,0,2" Text="{Binding UAccount}" MaxLines="1" IsUndoEnabled="False" MaxLength="20" VerticalContentAlignment="Bottom" Margin="10,0,0,0" Background="{x:Null}"/>
+                                        </hc:SimpleStackPanel>
+                                        <hc:SimpleStackPanel Orientation="Horizontal">
+                                            <TextBlock FontSize="16" Width="80" VerticalAlignment="Bottom" FontWeight="Bold" TextAlignment="Right">Password</TextBlock>
+                                            <hc:PasswordBox Background="{x:Null}" IsSafeEnabled="False" Width="250" FontSize="16" PasswordChar="*" BorderBrush="#FF1F2233" hc:BorderElement.CornerRadius="0" BorderThickness="0,0,0,2" UnsafePassword="{Binding UPassword}" Margin="10,0,0,0"></hc:PasswordBox>
+                                        </hc:SimpleStackPanel>
+                                        <hc:Row Gutter="10">
+                                            <hc:Col Span="12">
+                                                <Button Height="Auto" Command="{s:Action UConfirm}" HorizontalAlignment="Stretch" Background="#FF1F2233" BorderBrush="#FF1F2233" Foreground="White">
+                                                    <hc:SimpleStackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="&#xf058;" Margin="0,0,5,0" VerticalAlignment="Center" FontFamily="{StaticResource FA5R}" FontSize="16"/>
+                                                        <TextBlock Text="Confirm" FontWeight="Bold" VerticalAlignment="Center" FontSize="14"/>
+                                                    </hc:SimpleStackPanel>
+                                                </Button>
+                                            </hc:Col>
+                                            <hc:Col Span="12">
+                                                <Button Height="Auto" Command="{s:Action UCancel}" HorizontalAlignment="Stretch">
+                                                    <hc:SimpleStackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="&#xf057;" Margin="0,0,5,0" VerticalAlignment="Center" FontFamily="{StaticResource FA5R}" FontSize="16"/>
+                                                        <TextBlock Text="Cancel" FontWeight="Bold" VerticalAlignment="Center" FontSize="14"/>
+                                                    </hc:SimpleStackPanel>
+                                                </Button>
+                                            </hc:Col>
+                                        </hc:Row>
+                                    </hc:UniformSpacingPanel>
+                                </hc:SimpleStackPanel>
+                            </hc:TransitioningContentControl>
+                        </Grid>
+                    </Border>
+                </hc:TransitioningContentControl>
+            </Grid>
+        </hc:TransitioningContentControl>
+
+        <Grid Background="#88000000"  d:Visibility="Collapsed" Panel.ZIndex="104" ClipToBounds="True" Visibility="{Binding MBoxShow, Converter={StaticResource Boolean2VisibilityConverter}}">
+            <Border Background="White" BorderBrush="#FF1F2233" BorderThickness="0,2,0,8" Height="260">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="30" Direction="270" ShadowDepth="6" Opacity="0.3"/>
+                </Border.Effect>
+                <Grid ClipToBounds="True">
+                    <Border BorderBrush="{Binding MsgColor, Converter={StaticResource AlarmBrushesConverter}, ConverterParameter=2}" Opacity="0.4" BorderThickness="24" Width="170" Height="170" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Center" HorizontalAlignment="Center" >
+                        <Border.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform/>
+                                <RotateTransform Angle="45"/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </Border.RenderTransform>
+                    </Border>
+                    <hc:TransitioningContentControl TransitionStoryboard="{StaticResource ScaleFade25}">
+                        <Border Opacity="0.1" BorderThickness="14" Width="200" Height="200" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Center" HorizontalAlignment="Center" BorderBrush="Black" >
+                            <Border.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform />
+                                    <SkewTransform/>
+                                    <RotateTransform Angle="45"/>
+                                    <TranslateTransform/>
+                                </TransformGroup>
+                            </Border.RenderTransform>
+                        </Border>
+                    </hc:TransitioningContentControl>
+                    <hc:TransitioningContentControl  TransitionMode="Bottom2TopWithFade">
+                        <hc:SimpleStackPanel VerticalAlignment="Center" Orientation="Vertical" MaxWidth="400">
+                            <TextBlock FontSize="16" FontWeight="Bold" MaxHeight="200" TextAlignment="Center" TextWrapping="Wrap" d:Text="Message Content1111111 1111111111" Text="{Binding MsgContent}" />
+                            <UniformGrid Margin="0,30,0,0"  Rows="1"  d:Visibility="Visible" Visibility="{Binding MCanClose, Converter={StaticResource BoolToVisiCollaConverter}}">
+                                <Button Height="Auto" Width="Auto" Command="{s:Action MConfirm}" HorizontalAlignment="Stretch" Background="#FF1F2233" BorderBrush="#FF1F2233" Foreground="White" Margin="5,0,5,0">
+                                    <hc:SimpleStackPanel Orientation="Horizontal">
+                                        <TextBlock Text="&#xf058;" Margin="0,0,5,0" VerticalAlignment="Center" FontFamily="{StaticResource FA5R}" FontSize="16"/>
+                                        <TextBlock Text="Confirm" FontWeight="Bold" VerticalAlignment="Center" FontSize="14"/>
+                                    </hc:SimpleStackPanel>
+                                </Button>
+                                <Button Height="Auto" Width="Auto" Command="{s:Action MCancel}" HorizontalAlignment="Stretch" d:Visibility="Visible" Visibility="{Binding IsDuoButton, Converter={StaticResource BoolToVisiCollaConverter}}" Margin="5,0,5,0">
+                                    <hc:SimpleStackPanel Orientation="Horizontal">
+                                        <TextBlock Text="&#xf057;" Margin="0,0,5,0" VerticalAlignment="Center" FontFamily="{StaticResource FA5R}" FontSize="16"/>
+                                        <TextBlock Text="Cancel" FontWeight="Bold" VerticalAlignment="Center" FontSize="14"/>
+                                    </hc:SimpleStackPanel>
+                                </Button>
+                            </UniformGrid>
+                        </hc:SimpleStackPanel>
+                    </hc:TransitioningContentControl>
+
+                </Grid>
+            </Border>
+        </Grid>
+
+    </Grid>
+</Window>

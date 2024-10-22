@@ -1,0 +1,215 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7E1A7973-432F-4652-BC88-73887EF325F6}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>CIVILIGHT_ETERNA</RootNamespace>
+    <AssemblyName>CIVILIGHT_ETERNA</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>CIVILIGHT_ETERNA.App</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>aa0ml-f2nne-001.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="AFC\ProgramInfo.cs" />
+    <Compile Include="Alarm\Alarm.cs" />
+    <Compile Include="Alarm\AlarmSystem.cs" />
+    <Compile Include="Alarm\AlarmType.cs" />
+    <Compile Include="Converter\CollectionToVisiConverter.cs" />
+    <Compile Include="Converter\UserLevelToVisiConverter..cs" />
+    <Compile Include="DBs\Module\Config.cs" />
+    <Page Include="Converter\Converter.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Pages\ExceptionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\ShellView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="AFC\AFC.cs" />
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Bootstrapper.cs" />
+    <Compile Include="Converter\AbleStatusBrushConverter.cs" />
+    <Compile Include="Converter\AlarmBrushesConverter.cs" />
+    <Compile Include="Converter\BooleanInverseConverter.cs" />
+    <Compile Include="Converter\BoolToVisiCollaConverter.cs" />
+    <Compile Include="Converter\CollectionToBoolConverter.cs" />
+    <Compile Include="Converter\StringSplitConverter.cs" />
+    <Compile Include="Converter\StringToImageConverter.cs" />
+    <Compile Include="DBs\Module\UserAccess.cs" />
+    <Compile Include="DBs\SQLUtil.cs" />
+    <Compile Include="DBs\UserController.cs" />
+    <Compile Include="Pages\ExceptionView.xaml.cs">
+      <DependentUpon>ExceptionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\ExceptionViewModel.cs" />
+    <Compile Include="Pages\ShellView.xaml.cs">
+      <DependentUpon>ShellView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Pages\ShellViewModel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Resource Include="Fonts\fa501.otf" />
+    <Resource Include="Fonts\fa502.otf" />
+    <Resource Include="Fonts\fa503.otf" />
+    <Resource Include="Fonts\Font Awesome 6 Brands-Regular-400.otf" />
+    <Resource Include="Fonts\Font Awesome 6 Free-Regular-400.otf" />
+    <Resource Include="Fonts\Font Awesome 6 Free-Solid-900.otf" />
+    <Resource Include="Fonts\HarmonyOS_Sans_Condensed_Medium.ttf" />
+    <Resource Include="Fonts\HarmonyOS_Sans_SC_Black.ttf" />
+    <Resource Include="Fonts\HarmonyOS_Sans_SC_Bold.ttf" />
+    <Resource Include="Fonts\HarmonyOS_Sans_SC_Medium.ttf" />
+    <Resource Include="Fonts\HarmonyOS_Sans_SC_Regular.ttf" />
+    <None Include="Properties\Settings.settings">
+      <Generator>PublicSettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="HandyControl">
+      <Version>3.5.1</Version>
+    </PackageReference>
+    <PackageReference Include="PropertyChanged.Fody">
+      <Version>4.1.0</Version>
+    </PackageReference>
+    <PackageReference Include="sqlite-net-sqlcipher">
+      <Version>1.9.172</Version>
+    </PackageReference>
+    <PackageReference Include="Stylet">
+      <Version>1.3.7</Version>
+    </PackageReference>
+    <PackageReference Include="Vanara.PInvoke.Kernel32">
+      <Version>4.0.4</Version>
+    </PackageReference>
+    <PackageReference Include="Vanara.PInvoke.User32">
+      <Version>4.0.4</Version>
+    </PackageReference>
+    <PackageReference Include="WindowsAPICodePack-Shell">
+      <Version>1.1.1</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image\SS01.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image\39e5c6c69956ba1b36800b0f3accd5db_compress.jpg" />
+    <Resource Include="Image\OPE11.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="aa0ml-f2nne-001.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.6.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.6.2 %28x86 和 x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Toxiad.Common.Logger\Toxiad.Common.Logger.csproj">
+      <Project>{18a334fb-01ce-4fdb-afeb-fb175c0548f4}</Project>
+      <Name>Toxiad.Common.Logger</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

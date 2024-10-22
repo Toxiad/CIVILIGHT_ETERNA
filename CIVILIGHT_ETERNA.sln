@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34701.34
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CIVILIGHT_ETERNA", "CIVILIGHT_ETERNA\CIVILIGHT_ETERNA.csproj", "{7E1A7973-432F-4652-BC88-73887EF325F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Toxiad.Common.Logger", "Toxiad.Common.Logger\Toxiad.Common.Logger.csproj", "{18A334FB-01CE-4FDB-AFEB-FB175C0548F4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7E1A7973-432F-4652-BC88-73887EF325F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E1A7973-432F-4652-BC88-73887EF325F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E1A7973-432F-4652-BC88-73887EF325F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E1A7973-432F-4652-BC88-73887EF325F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18A334FB-01CE-4FDB-AFEB-FB175C0548F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18A334FB-01CE-4FDB-AFEB-FB175C0548F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18A334FB-01CE-4FDB-AFEB-FB175C0548F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18A334FB-01CE-4FDB-AFEB-FB175C0548F4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9348122F-7EF4-47BC-89E2-58815DF00562}
+	EndGlobalSection
+EndGlobal

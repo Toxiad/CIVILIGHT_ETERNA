@@ -1,0 +1,14 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:c="clr-namespace:Babel.Converter">
+
+    <c:BooleanInverseConverter x:Key="BooleanInverseConverter"/>
+    <c:BoolToVisiCollaConverter x:Key="BoolToVisiCollaConverter"/>
+    <c:AlarmBrushesConverter x:Key="AlarmBrushesConverter"/>
+    <c:StringToImageConverter x:Key="StringToImageConverter"/>
+    <c:AbleStatusBrushConverter x:Key="AbleStatusBrushConverter"/>
+    <c:StringSplitConverter x:Key="StringSplitConverter"/>
+    <c:CollectionToBoolConverter x:Key="CollectionToBoolConverter"/>
+    <c:CollectionToVisiConverter x:Key="CollectionToVisiConverter"/>
+    <c:UserLevelToVisiConverter x:Key="UserLevelToVisiConverter"/>
+</ResourceDictionary>

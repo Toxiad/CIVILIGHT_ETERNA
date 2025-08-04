@@ -14,8 +14,8 @@ namespace Toxiad.IO.Standar.Module
     {
         [PrimaryKey]
         public int Id { get; set; } = 0;
-        public string SourcePath { get; set; } = "D:\\Tokki\\Log";
-        public string TargetPath { get; set; } = "F:\\LogPackage";
+        public string SourcePath { get; set; } = "D:\\Files";
+        public string TargetPath { get; set; } = "D:\\Package";
         public DateTime LastAct { get; set; } = DateTime.MinValue;
         public DateTime NextAct { get; set; } = DateTime.MinValue;
         public bool Enable { get; set; } = false;

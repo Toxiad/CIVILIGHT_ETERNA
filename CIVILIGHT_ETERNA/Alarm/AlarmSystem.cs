@@ -100,6 +100,7 @@ namespace EquipmentLogExport.BabelSystem.Alarm
                 {
                     Alarms.Remove(atemp);
                 }
+                atemp = null;
             });
         }
     }

@@ -16,6 +16,8 @@ namespace CIVILIGHT_ETERNA
 {
     public class Bootstrapper : Bootstrapper<ShellViewModel>
     {
+        Mutex mutex;
+        bool MutexExit = false;
         protected override void Configure()
         {
             // Perform any other configuration before the application starts
@@ -25,11 +27,12 @@ namespace CIVILIGHT_ETERNA
             // This is called just after the application is started, but before the IoC container is set up.
             // Set up things like logging, etc
             bool createNew;
-            Mutex mutex = new Mutex(true, "Toxiad_CIVILIGHT_ETERNA_SingleRun_Mutex", out createNew);
+            mutex = new Mutex(false, "Toxiad_CIVILIGHT_ETERNA_SingleRun_Mutex_10032", out createNew);
             if (!createNew)
             {
+                MutexExit = true;
                 MessageBox.Show("进程已启动");
-                Application.Current.Shutdown();
+                Environment.Exit(10032);
             }
         }
 
@@ -53,22 +56,35 @@ namespace CIVILIGHT_ETERNA
         protected override void OnExit(ExitEventArgs e)
         {
             // Called on Application.Exit
-            Container.Get<ILogger>().Log("Application Exit", LogType.Warning);
+            if (MutexExit)
+            {
+                Container.Get<ILogger>().Log("Application Exit [Toxiad_CIVILIGHT_ETERNA_SingleRun_Mutex_10032]", LogType.Warning);
+
+            }
+            Container.Get<ILogger>().Log($"Application Exit [{e.ApplicationExitCode}]", LogType.Warning);
+            mutex.ReleaseMutex();
         }
 
         protected override void OnUnhandledException(DispatcherUnhandledExceptionEventArgs e)
         {
             // Called on Application.DispatcherUnhandledException
-            try
+            if (Environment.HasShutdownStarted) 
             {
-                e.Handled = true; //把 Handled 属性设为true，表示此异常已处理，程序可以继续运行，不会强制退出      
-                Container.Get<IWindowManager>().ShowDialog(new ExceptionViewModel("未捕获的UI线程异常，请及时联系管理员", e.Exception.Message, e.Exception.ToString()));
-
+                MessageBox.Show(e.Exception.Message);
             }
-            catch (Exception ex)
+            else
             {
-                //此时程序出现严重异常，将强制结束退出
-                Container.Get<IWindowManager>().ShowDialog(new ExceptionViewModel("致命UI线程错误，程序即将退出", ex.Message, ex.ToString()));
+                try
+                {
+                    e.Handled = true; //把 Handled 属性设为true，表示此异常已处理，程序可以继续运行，不会强制退出      
+                    Container.Get<IWindowManager>().ShowDialog(new ExceptionViewModel("未捕获的UI线程异常，请及时联系管理员", e.Exception.Message, e.Exception.ToString()));
+
+                }
+                catch (Exception ex)
+                {
+                    //此时程序出现严重异常，将强制结束退出
+                    MessageBox.Show(e.Exception.Message);
+                }
             }
         }
         void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)

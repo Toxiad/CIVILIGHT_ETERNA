@@ -13,6 +13,16 @@ using StyletIoC;
 
 namespace CIVILIGHT_ETERNA
 {
+    public enum AFCSpaceLowMode
+    {
+        DeleteEarliest,
+        Alarm
+    }
+    public enum AFCFileExistsMode
+    {
+        Skip,
+        Overwrite
+    }
     public enum LoaderEventType
     {
         Progress,
@@ -40,10 +50,11 @@ namespace CIVILIGHT_ETERNA
         public Guid ProcessId { get; set; } = Guid.NewGuid();
         public string Description { get; set; } = "就绪";
         public double Progress { get; set; } = 0;
-        public void Set(string source, string target, ILogger logger, int delay = 0, bool autoDelete = false)
+        public void Set(string source, string target, ILogger logger, int delay = 0, bool autoDelete = false, bool autoCompress = true)
         {
             Source = source;
             delOrg = autoDelete;
+            CompSW = autoCompress;
             Output = target;
             Delay = delay;
             Logger = logger;
@@ -52,6 +63,7 @@ namespace CIVILIGHT_ETERNA
         public string Output;
         int Delay;
         bool delOrg;
+        bool CompSW;
         bool IsStop;
         bool isStop;
         ILogger Logger;
@@ -64,23 +76,30 @@ namespace CIVILIGHT_ETERNA
             var duedate = DateTime.Now.AddDays(-(double)Delay);
             var lastWritedateM1 = DateTime.Today.AddDays(-1).AddHours(4);
             var root = Path.GetPathRoot(Path.GetFullPath(Output));
+            Logger.Log("AFC Start Task");
+            Logger.Log("AFC Driver Free Space Check");
             try
             {
                 DriveInfo.GetDrives().ToList().ForEach(i =>
                 {
-                    if (i.Name == root && i.TotalFreeSpace < 1 * 1024 * 1024 * 1024L)
+                    if (i.Name == root)
                     {
-                        IsStop = true;
-                        isStop = true;
-                        OnProcess(this, new AFCEventArgs
+                        long spacefr = i.TotalFreeSpace;
+                        Logger.Log($"AFC Driver Free Space: {(double)spacefr / 1024:f2} KB; {(double)spacefr / 1024 / 1024:f2} MB; {(double)spacefr / 1024 / 1024 /1024:f2} GB;");
+                        if (spacefr < 1 * 1024 * 1024 * 1024L)
                         {
-                            EventType = LoaderEventType.ProgressRemove,
-                            IsSuccess = false,
-                            Desc = "磁盘空间小于1GB",
-                            value = -1
-                        });
-                        Description = "磁盘空间小于1GB";
-                        throw new Exception("磁盘空间小于1GB");
+                            IsStop = true;
+                            isStop = true;
+                            OnProcess(this, new AFCEventArgs
+                            {
+                                EventType = LoaderEventType.ProgressRemove,
+                                IsSuccess = false,
+                                Desc = "磁盘空间小于1GB",
+                                value = -1
+                            });
+                            Description = "磁盘空间小于1GB";
+                            throw new Exception("磁盘空间小于1GB");
+                        }
                     }
                 });
                 OnProcess(this, new AFCEventArgs
@@ -91,7 +110,14 @@ namespace CIVILIGHT_ETERNA
                     value = -1
                 });
                 Description = "查找目录";
-                Logger.Log("AFC Start Task");
+                if (!CompSW)
+                {
+                    Logger.Log($"AFC Packing Skip Mode", LogType.Warning);
+                }
+                if (delOrg)
+                {
+                    Logger.Log($"AFC Packing Delete Mode", LogType.Warning);
+                }
                 Logger.Log($"AFC Output {Output}");
                 foreach (var subDir in subDirList)
                 {
@@ -124,21 +150,12 @@ namespace CIVILIGHT_ETERNA
                 {
                     try
                     {
-                        string opath = Path.Combine(Output, $"AFC_Archive_{subDir.Name}.zip");
-                        Description = $"正在压缩目录({current + 1}/{execList.Count})，{subDir.FullName}";
+                        if (CompSW)
+                        {
+                            string opath = Path.Combine(Output, $"AFC_Archive_{subDir.Name}.zip");
+                            string opathold = Path.Combine(Output, $"Archive_{subDir.Name}.zip");
+                            Description = $"正在压缩目录({current + 1}/{execList.Count})，{subDir.FullName}";
 
-                        OnProcess(this, new AFCEventArgs
-                        {
-                            EventType = LoaderEventType.Progress,
-                            IsSuccess = false,
-                            Desc = Description,
-                            value = Progress
-                        });
-                        if (File.Exists(opath))
-                        {
-                            CntSkip++;
-                            current++;
-                            Progress = 100 * ((double)current / execList.Count);
                             OnProcess(this, new AFCEventArgs
                             {
                                 EventType = LoaderEventType.Progress,
@@ -146,11 +163,43 @@ namespace CIVILIGHT_ETERNA
                                 Desc = Description,
                                 value = Progress
                             });
-                            Logger.Log($"AFC Exists：{subDir.FullName}，{subDir.CreationTime}，{subDir.LastWriteTime}");
-                            continue;
+                            if (File.Exists(opathold))
+                            {
+                                CntSkip++;
+                                current++;
+                                Progress = 100 * ((double)current / execList.Count);
+                                OnProcess(this, new AFCEventArgs
+                                {
+                                    EventType = LoaderEventType.Progress,
+                                    IsSuccess = false,
+                                    Desc = Description,
+                                    value = Progress
+                                });
+                                Logger.Log($"AFC Exists Old：{subDir.FullName}，{subDir.CreationTime}，{subDir.LastWriteTime}");
+                                continue;
+                            }
+                            if (File.Exists(opath))
+                            {
+                                CntSkip++;
+                                current++;
+                                Progress = 100 * ((double)current / execList.Count);
+                                OnProcess(this, new AFCEventArgs
+                                {
+                                    EventType = LoaderEventType.Progress,
+                                    IsSuccess = false,
+                                    Desc = Description,
+                                    value = Progress
+                                });
+                                Logger.Log($"AFC Exists：{subDir.FullName}，{subDir.CreationTime}，{subDir.LastWriteTime}");
+                                continue;
+                            }
+                            Logger.Log($"AFC Packing：{subDir.FullName}，{subDir.CreationTime}，{subDir.LastWriteTime}");
+                            ZipFile.CreateFromDirectory(subDir.FullName, opath, CompressionLevel.Optimal, true, Encoding.UTF8);
                         }
-                        Logger.Log($"AFC Packing：{subDir.FullName}，{subDir.CreationTime}，{subDir.LastWriteTime}");
-                        ZipFile.CreateFromDirectory(subDir.FullName, opath, CompressionLevel.Optimal, true, Encoding.UTF8);
+                        else
+                        {
+                            Logger.Log($"AFC Packing Skip Mode：{subDir.FullName}，{subDir.CreationTime}，{subDir.LastWriteTime}");
+                        }
                         if (delOrg)
                         {
                             Description = $"正在删除目录({current + 1}/{execList.Count})，{subDir.FullName}";
@@ -162,7 +211,7 @@ namespace CIVILIGHT_ETERNA
                                 Desc = Description,
                                 value = Progress
                             });
-                            subDir.Delete();
+                            subDir.Delete(true);
                         }
                         current++;
                         CntSuccess++;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FluentIcons.Common;
 
 namespace EquipmentLogExport.BabelSystem.Alarm
 {
@@ -14,16 +15,16 @@ namespace EquipmentLogExport.BabelSystem.Alarm
                 switch (Level)
                 {
                     case Level.Alarm:
-                        return "\uf071";
+                        return "Warning";
                         break;
                     case Level.Warning:
-                        return "\uf071";
+                        return "Warning";
                         break;
                     case Level.Info:
-                        return "\uf05a";
+                        return "Info";
                         break;
                     default:
-                        return "\uf05a";
+                        return "Info";
                         break;
                 }
             } 

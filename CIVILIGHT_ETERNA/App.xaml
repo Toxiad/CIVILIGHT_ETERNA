@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:CIVILIGHT_ETERNA"
              xmlns:s="https://github.com/canton7/Stylet" 
+             xmlns:hc="https://handyorg.github.io/handycontrol"
              xmlns:System="clr-namespace:System;assembly=mscorlib">
     <Application.Resources>
         <s:ApplicationLoader>
@@ -12,12 +13,13 @@
             <s:ApplicationLoader.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/HandyControl;component/Themes/SkinDefault.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/HandyControl;component/Themes/Theme.xaml"/>
+                <hc:Theme AccentColor="#FF1F2233"/>
                 <ResourceDictionary Source="Converter/Converter.xaml"/>
             </s:ApplicationLoader.MergedDictionaries>
             <System:Double x:Key="GlobalNormalFontSize">14</System:Double>
             <SolidColorBrush x:Key="TextForeLabelGray" Color="#FF999999"/>
             <SolidColorBrush x:Key="TextForeContentGray" Color="#FF333333"/>
-            <SolidColorBrush x:Key="TALMWARNBRUSH" Color="#FFD7AC0B"/>
+            <SolidColorBrush x:Key="TALMWARNBRUSH" Color="#FFC59201"/>
             <SolidColorBrush x:Key="TALMERRBRUSH" Color="#FFA31B1B"/>
             <SolidColorBrush x:Key="TALMINFOBRUSH" Color="#FF1F74B6"/>
 
@@ -30,20 +32,12 @@
             <SolidColorBrush x:Key="MAINBLACKBRUSH" Color="Black"/>
             <SolidColorBrush x:Key="MAINDARKBRUSH" Color="#FF1F2233"/>
 
-            <FontFamily x:Key="FA6S">Fonts/#Font Awesome 6 Free Solid</FontFamily>
-            <FontFamily x:Key="FA6R">Fonts/#Font Awesome 6 Free Regular</FontFamily>
-            <FontFamily x:Key="FA6B">Fonts/#Font Awesome 6 Brand Regular</FontFamily>
-            <FontFamily x:Key="FA5S">Fonts/#Font Awesome 5 Free Solid</FontFamily>
-            <FontFamily x:Key="FA5R">Fonts/#Font Awesome 5 Free Regular</FontFamily>
-            <FontFamily x:Key="FA5B">Fonts/#Font Awesome 5 Brand Regular</FontFamily>
-
 
             <ImageSource x:Key="Focalors01">Image/39e5c6c69956ba1b36800b0f3accd5db_compress.jpg</ImageSource>
             <ImageSource x:Key="Shu01">Image/SS01.jpg</ImageSource>
             <ImageSource x:Key="Babel01">Image/OPE11.png</ImageSource>
 
-            <FontFamily x:Key="HMSansSC">Fonts/#HarmonyOS Sans SC</FontFamily>
-            <FontFamily x:Key="HMSansC">Fonts/#HarmonyOS Sans Condensed Medium</FontFamily>
+            <FontFamily x:Key="HMSansSC">Fonts/#MiSans VF</FontFamily>
 
             <Storyboard x:Key="UpDownCycle">
                 <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(TranslateTransform.Y)" From="-2" To="2" Duration="0:0:0.6" AutoReverse="True" RepeatBehavior="Forever">

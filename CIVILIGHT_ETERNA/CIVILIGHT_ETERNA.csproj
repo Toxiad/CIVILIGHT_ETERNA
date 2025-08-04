@@ -141,17 +141,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Resource Include="Fonts\fa501.otf" />
-    <Resource Include="Fonts\fa502.otf" />
-    <Resource Include="Fonts\fa503.otf" />
-    <Resource Include="Fonts\Font Awesome 6 Brands-Regular-400.otf" />
-    <Resource Include="Fonts\Font Awesome 6 Free-Regular-400.otf" />
-    <Resource Include="Fonts\Font Awesome 6 Free-Solid-900.otf" />
-    <Resource Include="Fonts\HarmonyOS_Sans_Condensed_Medium.ttf" />
-    <Resource Include="Fonts\HarmonyOS_Sans_SC_Black.ttf" />
-    <Resource Include="Fonts\HarmonyOS_Sans_SC_Bold.ttf" />
-    <Resource Include="Fonts\HarmonyOS_Sans_SC_Medium.ttf" />
-    <Resource Include="Fonts\HarmonyOS_Sans_SC_Regular.ttf" />
+    <Resource Include="Fonts\MiSans VF.ttf" />
     <None Include="Properties\Settings.settings">
       <Generator>PublicSettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -161,6 +151,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="FluentIcons.WPF">
+      <Version>1.1.244</Version>
+    </PackageReference>
     <PackageReference Include="HandyControl">
       <Version>3.5.1</Version>
     </PackageReference>

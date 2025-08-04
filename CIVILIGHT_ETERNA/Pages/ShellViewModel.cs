@@ -1,11 +1,4 @@
-﻿using CIVILIGHT_ETERNA.DBs;
-using EquipmentLogExport.BabelSystem.Alarm;
-using HandyControl.Data;
-using Microsoft.Win32;
-using Microsoft.WindowsAPICodePack.Dialogs;
-using Stylet;
-using StyletIoC;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -15,8 +8,12 @@ using System.Runtime;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Interop;
-using System.Xml.Linq;
+using CIVILIGHT_ETERNA.DBs;
+using EquipmentLogExport.BabelSystem.Alarm;
+using HandyControl.Data;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using Stylet;
+using StyletIoC;
 using Toxiad.Common.Logger;
 using Toxiad.IO.Standar;
 using Toxiad.IO.Standar.Module;
@@ -86,6 +83,30 @@ namespace CIVILIGHT_ETERNA.Pages
             MConfirm();
             IsInit = true;
             Logger.Log("Toxiad AFC Initialized");
+            if (Config.SpaceLowAutoDel)
+            {
+                Logger.Warn("已开启空间不足时自动删除早期文件", key: "RISK_ITEM_ALARM_SPACELOWAUTODEL", title: "风险项目警告", canUserRelease: false);
+            }
+            else
+            {
+                Logger.Release("RISK_ITEM_ALARM_SPACELOWAUTODEL");
+            }
+            if (!Config.Enable)
+            {
+                Logger.Warn("将不会执行AFC自动任务，手动执行不受此影响确", key: "RISK_ITEM_AFCDISABLE", title: "AFC未启用", canUserRelease: false);
+            }
+            else
+            {
+                Logger.Release("RISK_ITEM_AFCDISABLE");
+            }
+            if (Config.Delete)
+            {
+                Logger.Warn("已开启自动删除原文件", key: "RISK_ITEM_AUTODEL", title: "风险项目警告", canUserRelease: false);
+            }
+            else
+            {
+                Logger.Release("RISK_ITEM_AUTODEL");
+            }
         }
         public void AlarmClick(Alarm sel)
         {
@@ -120,7 +141,8 @@ namespace CIVILIGHT_ETERNA.Pages
                             Logger.Warn($"用户{CurrentUser.UserName}在{DateTime.Now: yyyy-MM-dd HH:mm:ss}停止了AFC任务", title: "用户停止任务");
                         }
                         Logger.Log($"User {CurrentUser.UserName} has stopped CE at{DateTime.Now: yyyy-MM-dd HH:mm:ss}", LogType.Warning);
-                        Logger.Log("Environment.Exit(0);z", LogType.Warning);
+                        Logger.Log("Environment.Exit(0);", LogType.Warning);
+                        //Application.Current.Shutdown();
                         Environment.Exit(0);
                         //Task.Run(async() =>
                         //{
@@ -172,6 +194,7 @@ namespace CIVILIGHT_ETERNA.Pages
             while (true)
             {
                 Thread.Sleep(1000);//Per Second
+
                 if (DateTime.Now.Second % 10 == 0)//10 Sec
                 {
                     //CurrentUser.LastHeartBeat = DateTime.Now;
@@ -188,7 +211,33 @@ namespace CIVILIGHT_ETERNA.Pages
                     {
                         if (i.Name == root && i.TotalFreeSpace < 5 * 1024 * 1024 * 1024L)
                         {
-                            Logger.Warn($"当前磁盘剩余空间{i.TotalFreeSpace/1024/1024/1024}GB", null, "AFC_STORAGE_FREE_SPACE_LOW", "磁盘空间不足", false);
+                            if (Config.SpaceLowAutoDel)
+                            {
+                                Logger.Log($"SpaceLowAutoDelete：{Config.SpaceLowAutoDel}", LogType.Warning);
+                                DirectoryInfo rootoutputdir = new DirectoryInfo(Config.TargetPath);
+                                if (rootoutputdir.Exists)
+                                {
+                                    var subs = rootoutputdir.GetFiles("*Archive_*.zip").OrderBy(ti => ti.LastWriteTime);
+                                    long totaldelsize = 0;
+                                    int totaldelcnt = 0;
+                                    foreach (var sub in subs)
+                                    {
+                                        sub.Delete();
+                                        totaldelsize += sub.Length;
+                                        totaldelcnt += 1;
+                                        Logger.Log($"SpaceLowAutoDelete：Del {sub.FullName}; {sub.LastWriteTime}; {sub.Length}; Total {totaldelsize};", LogType.Warning);
+                                        if (totaldelsize > 5 * 1024 * 1024 * 1024L)
+                                        {
+                                            break;
+                                        }
+                                    }
+                                    Logger.Warn($"磁盘剩余空间小于{(double)i.TotalFreeSpace / 1024 / 1024 / 1024:f1}GB，已删除{totaldelcnt}个，共{(double)totaldelsize / 1024 / 1024 / 1024:f1}GB早期文件", title: "磁盘空间自动清理");
+                                }
+                            }
+                            else
+                            {
+                                Logger.Warn($"当前磁盘剩余空间{(double)i.TotalFreeSpace / 1024 / 1024 / 1024:f1}GB", null, "AFC_STORAGE_FREE_SPACE_LOW", "磁盘空间不足", false);
+                            }
                         }
                         else
                         {
@@ -210,29 +259,46 @@ namespace CIVILIGHT_ETERNA.Pages
                         // AFC
                         if (Config.Enable)
                         {
-                            Directory.CreateDirectory(Config.TargetPath);
-                            if (Directory.Exists(Config.SourcePath))
+                            if (_AFC == null)
                             {
-                                ProgressShow = true;
-                                ProgressTitle = $"AFC {DateTime.Now:yyyy/MM/dd HH:mm:ss}";
-                                Logger.Log($"New AFC {DateTime.Now:yyyy/MM/dd HH:mm:ss}");
-                                _AFC = _container.Get<AFC>();
-                                _AFC.Set(Config.SourcePath, Config.TargetPath, Logger, Config.Delay, Config.Delete);
-                                //Execute.PostToUIThread(() => { AFCs.Add(_AFC); });
-                                Thread.Sleep(2000);
-                                await _AFC.Start();
-                                Config.LastAct = DateTime.Now;
-                                Logger.Log($"AFC Last Act {Config.LastAct}");
-                                SaveConfig();
-                                //GC.Collect();
-                                Logger.Log($"GC LargeObjectHeapCompact");
-                                GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
-                                Logger.Log($"GC Force Collect 0");
-                                GC.Collect(0, GCCollectionMode.Forced);
+                                try
+                                {
+                                    Directory.CreateDirectory(Config.TargetPath);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Logger.Error($"无法创建目标文件夹{Config.TargetPath}。", ex, "AFC_AUTOTASK_FAIL_TARGET_CREATE_FAIL", "创建目录失败", true);
+                                }
+                                if (Directory.Exists(Config.TargetPath))
+                                {
+                                    if (Directory.Exists(Config.SourcePath))
+                                    {
+                                        ProgressShow = true;
+                                        ProgressTitle = $"自动任务 {DateTime.Now:yyyy/MM/dd HH:mm:ss}";
+                                        Logger.Log($"New Auto AFC {DateTime.Now:yyyy/MM/dd HH:mm:ss}");
+                                        _AFC = _container.Get<AFC>();
+                                        _AFC.Set(Config.SourcePath, Config.TargetPath, Logger, Config.Delay, Config.Delete, Config.Compress);
+                                        //Execute.PostToUIThread(() => { AFCs.Add(_AFC); });
+                                        Thread.Sleep(2000);
+                                        await _AFC.Start();
+                                        Config.LastAct = DateTime.Now;
+                                        Logger.Log($"AFC Last Act {Config.LastAct}");
+                                        SaveConfig();
+                                        //GC.Collect();
+                                        Logger.Log($"GC LargeObjectHeapCompact");
+                                        GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
+                                        Logger.Log($"GC Force Collect 0");
+                                        GC.Collect(0, GCCollectionMode.Forced);
+                                    }
+                                    else
+                                    {
+                                        Logger.Error($"无法找到目标文件夹{Config.SourcePath}，未能执行自动任务。", null, "AFC_AUTOTASK_FAIL_SOURCE_MISMATCH", "AFC自动任务失败", true);
+                                    }
+                                }
                             }
                             else
                             {
-                                Logger.Error($"无法找到目标文件夹{Config.SourcePath}，未能执行自动任务。", null, "AFC_AUTOTASK_FAIL_SOURCE_MISMATCH", "AFC自动任务失败", true);
+                                Logger.Error($"正在执行任务{ProgressTitle}，未能执行本次自动任务。", null, "AFC_AUTOTASK_FAIL_MIXRUNNING", "AFC自动任务失败", true);
                             }
                         }
                         else
@@ -240,7 +306,7 @@ namespace CIVILIGHT_ETERNA.Pages
                             Logger.Log("AFC AutoTask Closed");
                         }
                     });
-                    Logger.FileAutoClear(DateTime.Today.AddDays(-10));
+                    Logger.FileAutoClear(DateTime.Today.AddDays(-60));
                 }
             }
         }
@@ -379,22 +445,102 @@ namespace CIVILIGHT_ETERNA.Pages
         //}
         public void AFCRun()
         {
-            if (ForceRun)
+            if (_AFC != null)
             {
                 return;
             }
             if (UserLevelCheck(User.AdmSys, "执行AFC任务"))
             {
                 ForceRun = true;
-                Config.NextAct = DateTime.Today;
+                Logger.Log($"AFC MANUAL RUN {DateTime.Now:yyyy/MM/dd HH:mm:ss}");
+                _ = Task.Run(async () =>
+                {
+                    var root = Path.GetPathRoot(Path.GetFullPath(Config.TargetPath));
+                    DriveInfo.GetDrives().ToList().ForEach(i =>
+                    {
+                        if (i.Name == root && i.TotalFreeSpace < 5 * 1024 * 1024 * 1024L)
+                        {
+                            if (Config.SpaceLowAutoDel)
+                            {
+                                Logger.Log($"SpaceLowAutoDelete：{Config.SpaceLowAutoDel}", LogType.Warning);
+                                DirectoryInfo rootoutputdir = new DirectoryInfo(Config.TargetPath);
+                                if (rootoutputdir.Exists)
+                                {
+                                    var subs = rootoutputdir.GetFiles().OrderBy(ti => ti.LastWriteTime);
+                                    long totaldelsize = 0;
+                                    int totaldelcnt = 0;
+                                    foreach (var sub in subs)
+                                    {
+                                        sub.Delete();
+                                        totaldelsize += sub.Length;
+                                        totaldelcnt += 1;
+                                        Logger.Log($"SpaceLowAutoDelete：Del {sub.FullName}; {sub.LastWriteTime}; {sub.Length}; Total {totaldelsize};", LogType.Warning);
+                                        if (totaldelsize > 5 * 1024 * 1024 * 1024L)
+                                        {
+                                            break;
+                                        }
+                                    }
+                                    Logger.Warn($"磁盘剩余空间小于{(double)i.TotalFreeSpace / 1024 / 1024 / 1024:f1}GB，已删除{totaldelcnt}个，共{(double)totaldelsize / 1024 / 1024 / 1024:f1}GB早期文件", title: "磁盘空间自动清理");
+                                }
+                            }
+                            else
+                            {
+                                Logger.Warn($"当前磁盘剩余空间{(double)i.TotalFreeSpace / 1024 / 1024 / 1024:f1}GB", null, "AFC_STORAGE_FREE_SPACE_LOW", "磁盘空间不足", false);
+                            }
+                        }
+                        else
+                        {
+                            Logger.Release("AFC_STORAGE_FREE_SPACE_LOW");
+                        }
+                    });
+                    // AFC
+                    try
+                    {
+                        Directory.CreateDirectory(Config.TargetPath);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error($"无法创建目标文件夹{Config.TargetPath}。", ex, "AFC_AUTOTASK_FAIL_TARGET_CREATE_FAIL", "创建目录失败", true);
+                    }
+                    if (Directory.Exists(Config.TargetPath))
+                    {
+                        if (Directory.Exists(Config.SourcePath))
+                        {
+                            ProgressShow = true;
+                            ProgressTitle = $"手动任务 {DateTime.Now:yyyy/MM/dd HH:mm:ss}";
+                            Logger.Log($"New Manual AFC {DateTime.Now:yyyy/MM/dd HH:mm:ss}");
+                            _AFC = _container.Get<AFC>();
+                            _AFC.Set(Config.SourcePath, Config.TargetPath, Logger, Config.Delay, Config.Delete, Config.Compress);
+                            //Execute.PostToUIThread(() => { AFCs.Add(_AFC); });
+                            Thread.Sleep(2000);
+                            await _AFC.Start();
+                            Config.LastAct = DateTime.Now;
+                            Logger.Log($"AFC Last Act {Config.LastAct}");
+                            SaveConfig();
+                            //GC.Collect();
+                            Logger.Log($"GC LargeObjectHeapCompact");
+                            GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
+                            Logger.Log($"GC Force Collect 0");
+                            GC.Collect(0, GCCollectionMode.Forced);
+                        }
+                        else
+                        {
+                            Logger.Error($"无法找到目标文件夹{Config.SourcePath}，未能执行自动任务。", null, "AFC_AUTOTASK_FAIL_SOURCE_MISMATCH", "AFC自动任务失败", true);
+                        }
+                    }
+                });
             }
         }
         public void AFCStop()
         {
+            if (_AFC == null)
+            {
+                return;
+            }
             if (UserLevelCheck(User.AdmSys, "停止任务"))
             {
+                Logger.Warn($"用户{CurrentUser.UserName}在{DateTime.Now: yyyy-MM-dd HH:mm:ss}停止了AFC任务{ProgressTitle}", title: "用户停止任务");
                 Task.Run(_AFC.Stop);
-                Logger.Warn($"用户{CurrentUser.UserName}在{DateTime.Now: yyyy-MM-dd HH:mm:ss}停止了AFC任务", title: "用户停止任务");
             }
         }
         public async void AFCSourceChange()
@@ -434,13 +580,51 @@ namespace CIVILIGHT_ETERNA.Pages
                 SaveConfig();
             }
         }
+        public async void AFCCompressSwitch()
+        {
+            if (UserLevelCheck(User.AdmSys, "切换AFC压缩开关"))
+            {
+                if (await Danger("切换AFC压缩开关"))
+                {
+                    Config.Compress = !Config.Compress;
+                    SaveConfig();
+                }
+            }
+        }
         public async void AFCDeleteSwitch() 
         {
-            if (UserLevelCheck(User.AdmSys, "切换AFC删除条件"))
+            if (UserLevelCheck(User.AdmSys, "切换AFC删除开关"))
             {
-                if (await Danger("切换AFC删除条件"))
+                if (await Danger("切换AFC删除开关"))
                 {
                     Config.Delete = !Config.Delete;
+                    if (Config.Delete)
+                    {
+                        Logger.Warn("已开启自动删除原文件", key: "RISK_ITEM_AUTODEL", title: "风险项目警告", canUserRelease: false);
+                    }
+                    else
+                    {
+                        Logger.Release("RISK_ITEM_AUTODEL");
+                    }
+                    SaveConfig();
+                }
+            }
+        }
+        public async void AFCSpaceLowSwitch()
+        {
+            if (UserLevelCheck(User.AdmSys, "切换AFC空间不足动作"))
+            {
+                if (await Danger("切换AFC空间不足动作"))
+                {
+                    Config.SpaceLowAutoDel = !Config.SpaceLowAutoDel;
+                    if (Config.SpaceLowAutoDel)
+                    {
+                        Logger.Warn("已开启空间不足时自动删除早期文件", key: "RISK_ITEM_ALARM_SPACELOWAUTODEL", title: "风险项目警告", canUserRelease: false);
+                    }
+                    else
+                    {
+                        Logger.Release("RISK_ITEM_ALARM_SPACELOWAUTODEL");
+                    }
                     SaveConfig();
                 }
             }
@@ -468,6 +652,14 @@ namespace CIVILIGHT_ETERNA.Pages
                 if (await Danger("切换AFC状态"))
                 {
                     Config.Enable = !Config.Enable;
+                    if (!Config.Enable)
+                    {
+                        Logger.Warn("将不会执行AFC自动任务，手动执行不受此影响确", key: "RISK_ITEM_AFCDISABLE", title: "AFC未启用", canUserRelease: false);
+                    }
+                    else
+                    {
+                        Logger.Release("RISK_ITEM_AFCDISABLE");
+                    }
                     SaveConfig();
                 }
             }

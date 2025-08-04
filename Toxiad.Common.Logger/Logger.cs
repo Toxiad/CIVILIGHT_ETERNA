@@ -63,7 +63,7 @@ namespace Toxiad.Common.Logger
         public void FileAutoClear(DateTime before)
         {
             Log($"Logger::AutoClear Start[before={before:yyyy-MM-dd_HH-mm-ss}];");
-            logDirectory.GetFiles("*", SearchOption.AllDirectories).ToList().ForEach(file =>
+            logDirectory.GetFiles("Log*.log", SearchOption.AllDirectories).ToList().ForEach(file =>
             {
                 if (file.LastWriteTime < before)
                 {
